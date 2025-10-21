@@ -4,3 +4,6 @@ Description=Certificate check service
 [Service]
 Type=oneshot
 ExecStart=/usr/bin/xcertcheck
+
+[Install]
+WantedBy=multi-user.target

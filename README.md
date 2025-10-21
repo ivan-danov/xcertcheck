@@ -34,7 +34,7 @@ www.github.com:443<br/>
 
 ### Start
 
-sudo systemctl enable xcertcheck@daily<br/>
+sudo systemctl enable xcertcheck@daily.service<br/>
 sudo systemctl enable xcertcheck-daily.timer<br/>
 
 ### Start from console
@@ -44,3 +44,7 @@ sudo systemctl start xcertcheck@daily<br/>
 ### Show timer status
 
 sudo systemctl list-timers -all 'xcertcheck*'<br/>
+
+### View log
+
+journalctl -u xcertcheck@daily<br/>
