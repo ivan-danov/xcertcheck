@@ -1,0 +1,6 @@
+[Unit]
+Description=Certificate check service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/xcertcheck

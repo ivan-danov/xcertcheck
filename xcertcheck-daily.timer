@@ -1,0 +1,12 @@
+[Unit]
+Description=Certificate check service timer
+
+[Timer]
+# OnCalendar=00:30
+OnCalendar=daily
+RandomizedDelaySec=60m
+Persistent=true
+Unit=xcertcech@daily.service
+
+[Install]
+WantedBy=timers.target
