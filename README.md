@@ -32,19 +32,20 @@ www.google.com:443<br/>
 www.github.com:443<br/>
 <br/>
 
-### Start
+### Enable service and start timer
 
 sudo systemctl enable xcertcheck@daily.service<br/>
-sudo systemctl enable xcertcheck-daily.timer<br/>
-
-### Start from console
-
-sudo systemctl start xcertcheck@daily.service<br/>
+sudo systemctl enable --now xcertcheck-daily.timer<br/>
 
 ### Show timer status
 
 sudo systemctl list-timers -all 'xcertcheck*'<br/>
 
-### View log
+### View service log
 
 journalctl -u xcertcheck@daily.service<br/>
+
+### Manualy start from console
+
+xcertcheck<br/>
+
