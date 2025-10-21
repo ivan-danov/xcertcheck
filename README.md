@@ -39,7 +39,7 @@ sudo systemctl enable xcertcheck-daily.timer<br/>
 
 ### Start from console
 
-sudo systemctl start xcertcheck@daily<br/>
+sudo systemctl start xcertcheck@daily.service<br/>
 
 ### Show timer status
 
@@ -47,4 +47,4 @@ sudo systemctl list-timers -all 'xcertcheck*'<br/>
 
 ### View log
 
-journalctl -u xcertcheck@daily<br/>
+journalctl -u xcertcheck@daily.service<br/>
