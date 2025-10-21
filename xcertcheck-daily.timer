@@ -6,7 +6,7 @@ Description=Certificate check service timer
 OnCalendar=daily
 RandomizedDelaySec=60m
 Persistent=true
-Unit=xcertceck@daily.service
+Unit=xcertcheck@daily.service
 
 [Install]
 WantedBy=timers.target
