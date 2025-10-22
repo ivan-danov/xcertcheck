@@ -83,7 +83,7 @@ while read -r TARGET; do
 	log "🔎 Checking if ${TARGET} expires in less than ${DAYS} days"
 
 	log "⌛ Get certificate from ${TARGET}"
-	cert=$(openssl s_client -connect "${TARGET}" -servername "${TARGET}" 2>/dev/null || true)
+	cert=$(: | openssl s_client -connect "${TARGET}" -servername "${TARGET}" 2>/dev/null || true)
 	if [ "x$cert" == "x" ]; then
 		log "⚠ No certificate for ${TARGET}"
 		# FIXME: send mail
