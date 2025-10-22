@@ -80,11 +80,24 @@ fi
 res=0
 log "🔎 Checking if certificates expires in less than ${DAYS} days"
 while read -r TARGET; do
-	# echo "checking if ${TARGET} expires in less than ${DAYS} days"
-	expirationdate=$(date -d "$(: | openssl s_client -connect "${TARGET}" -servername "${TARGET}" 2>/dev/null \
-				| openssl x509 -text \
-				| grep 'Not After' \
-				|awk '{print $4,$5,$7}')" '+%s')
+	log "🔎 Checking if ${TARGET} expires in less than ${DAYS} days"
+
+	log "⌛ Get certificate from ${TARGET}"
+	cert=$(openssl s_client -connect "${TARGET}" -servername "${TARGET}" 2>/dev/null || true)
+	if [ "x$cert" == "x" ]; then
+		log "⚠ No certificate for ${TARGET}"
+		# FIXME: send mail
+		continue
+	fi
+
+	cert_exp=$(echo "${cert}"| openssl x509 -text | grep 'Not After' | awk '{print $4,$5,$7}')
+	# log "🙏 Certificate for ${TARGET} expire date ${cert_exp}"
+	expirationdate=$(date -d "${cert_exp}" '+%s' 2>/dev/null || true)
+	if [ "x$expirationdate" == "x" ]; then
+		log "⚠ No expiratin date in certificate for ${TARGET}"
+		# FIXME: send mail
+		continue
+	fi
 	expdate=$(date -d @"${expirationdate}" '+%Y-%m-%d')
 	in7days=$(($(date +%s) + (86400*DAYS)))
 	if [ "${in7days}" -gt "${expirationdate}" ]; then
