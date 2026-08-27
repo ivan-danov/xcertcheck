@@ -87,24 +87,22 @@ define deb_begin
 	$(Q)$(RM) -rf $(DEBDIR)
 	$(Q)mkdir -p $(DEBDIR)/usr/share/doc/$(DEBNAME)
 	$(Q)mkdir -p $(DEBDIR)/DEBIAN
-
 	$(Q)cp copyright $(DEBDIR)/usr/share/doc/$(DEBNAME)/copyright
-
 endef # deb_begin
 
-ifneq ($(GIT2CL),)
 define deb_changelog
-	$(Q)$(GIT2CL) > $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
-	$(Q)gzip -9 -n $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
-endef # deb_changelog
-else # GIT2CL
-define deb_changelog
-	$(Q)echo "$(shell date -R)  $(VENDOR_NAME) ($(VENDOR_EMAIL))" > $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
+	$(Q)echo "$(DEBNAME) ($(PROJECT_VERSION)) unstable; urgency=medium" > $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
+	$(Q)echo "" >> $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
+	$(Q)echo "  * Date $(shell date --rfc-email)" >> $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
 	$(Q)echo "  * Release $(PROJECT_VERSION)" >> $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
 	$(Q)echo "  * Generated from:" >> $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
+	$(Q)(for rv in $(REPO_VERS); do echo "  *   $$rv"; done) >> $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
+	$(Q)echo "  *" >> $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
+	$(Q)git log --pretty="format:  * %w(64,0,4)%h %s %b%n %cd" >> $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
+	$(Q)echo "" >> $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
+	$(Q)git log --pretty="format: -- %aN <%ae>  %aD%n%n" -1 >> $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
 	$(Q)gzip -9 -n $(DEBDIR)/usr/share/doc/$(DEBNAME)/changelog
 endef # deb_changelog
-endif # GIT2CL
 
 define deb_control
 	$(Q)echo "Package: $(DEBNAME)" > $(DEBDIR)/DEBIAN/control
@@ -163,6 +161,8 @@ define deb_end
 	-$(Q)lintian $(LINTIAN_FLAGS) --tag-display-limit 0 $(FINAL_DEBNAME)
 endef # deb_end
 
+TARGET_SYSTEMD_PATH = /usr/lib/systemd
+
 define deb_func
 	$(call deb_begin)
 	$(call deb_changelog)
@@ -170,11 +170,11 @@ define deb_func
 	${Q}cp xcertcheck.sh $(DEBDIR)/usr/bin/xcertcheck
 	${Q}chmod 0755 $(DEBDIR)/usr/bin/xcertcheck
 
-	${Q}mkdir -p $(DEBDIR)/lib/systemd/system
-	${Q}cp "xcertcheck-daily.timer" "$(DEBDIR)/lib/systemd/system/"
-	${Q}chmod 0644 "$(DEBDIR)/lib/systemd/system/xcertcheck-daily.timer"
-	${Q}cp "xcertcheck@.service" "$(DEBDIR)/lib/systemd/system/"
-	${Q}chmod 0644 "$(DEBDIR)/lib/systemd/system/xcertcheck@.service"
+	${Q}mkdir -p $(DEBDIR)${TARGET_SYSTEMD_PATH}/system
+	${Q}cp "xcertcheck-daily.timer" "$(DEBDIR)${TARGET_SYSTEMD_PATH}/system/"
+	${Q}chmod 0644 "$(DEBDIR)${TARGET_SYSTEMD_PATH}/system/xcertcheck-daily.timer"
+	${Q}cp "xcertcheck@.service" "$(DEBDIR)${TARGET_SYSTEMD_PATH}/system/"
+	${Q}chmod 0644 "$(DEBDIR)${TARGET_SYSTEMD_PATH}/system/xcertcheck@.service"
 
 	$(call deb_control)
 	$(call deb_end)

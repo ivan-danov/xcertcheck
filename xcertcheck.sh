@@ -17,9 +17,9 @@ PACKAGE_NAME=xcertcheck
 log() {
 	echo >&2 -e "[$(date +"%Y-%m-%d %H:%M:%S")] ${1-}"
 }
-ifIsSet() {
-	[[ ${!1-x} == x ]] && return 1 || return 0
-}
+# ifIsSet() {
+# 	[[ ${!1-x} == x ]] && return 1 || return 0
+# }
 ifNotSet() {
 	[[ ${!1-x} == x ]] && return 0 || return 1
 }
@@ -34,6 +34,7 @@ die() {
 	cleanup_display_error=false
 	exit "$exit_code"
 }
+# shellcheck disable=SC2329 # (info): This function is never invoked. Check usage (or ignored if invoked indirectly).
 cleanup() {
 	exit_code=$?
 	trap - SIGINT SIGTERM ERR EXIT
@@ -45,16 +46,19 @@ cleanup() {
 }
 trap cleanup SIGINT SIGTERM ERR EXIT
 
+CONFFILE=${1:-/etc/xcertcheck.conf}
+
 # example
 # XMAIL=/usr/local/bin/fake-msmtp bash ./xcertcheck.sh 700 xcertcheck.list.txt bozo@kosmev.com
-if [ ! -r /etc/xcertcheck.conf ]; then
-	log "💥 Config file /etc/xcertcheck.conf not found!"
+if [ ! -r "${CONFFILE}" ]; then
+	log "💥 Config file ${CONFFILE} not found!"
 	log ""
-	log "Example /etc/xcertcheck.conf:"
+	log "Example ${CONFFILE}:"
 	log "DOMAINS=/etc/xcertcheck.list.txt"
 	log "RECIPIENT=user@example.com"
 	log "DAYS=7"
 	log "XMAIL=/usr/bin/sendmail"
+	log "OPENSSL_TIMEOUT=30"
 	log ""
 	log "example /etc/xcertcheck.list.txt"
 	log "www.danov.pro:443"
@@ -63,8 +67,8 @@ if [ ! -r /etc/xcertcheck.conf ]; then
 	die "💥 Pleace, fix configuration!"
 fi
 
-# shellcheck disable=SC1091 # (info): Not following: /etc/xcertcheck.conf was not specified as input
-source /etc/xcertcheck.conf
+# shellcheck disable=SC1090 # (warning): ShellCheck can't follow non-constant source. Use a directive to specify location.
+source "${CONFFILE}"
 
 ifNotSet DAYS && die "💥 DAYS not defined!"
 ifNotSet DOMAINS && die "💥 DOMAINS not defined!"
@@ -77,14 +81,16 @@ if [ ! -r "${DOMAINS}" ]; then
 	die "💥 Domains list file '${DOMAINS}' not found"
 fi
 
+ifNotSet OPENSSL_TIMEOUT && OPENSSL_TIMEOUT=10
+
 res=0
 log "🔎 Checking if certificates expires in less than ${DAYS} days"
 while read -r TARGET; do
 	log "🔎 Checking if ${TARGET} expires in less than ${DAYS} days"
 
 	log "⌛ Get certificate from ${TARGET}"
-	cert=$(: | openssl s_client -connect "${TARGET}" -servername "${TARGET}" 2>/dev/null || true)
-	if [ "x$cert" == "x" ]; then
+	cert=$(: | timeout "${OPENSSL_TIMEOUT}" openssl s_client -connect "${TARGET}" -servername "${TARGET}" 2>/dev/null || true)
+	if [ -z "$cert" ]; then
 		log "⚠ No certificate for ${TARGET}"
 		# FIXME: send mail
 		continue
@@ -93,7 +99,7 @@ while read -r TARGET; do
 	cert_exp=$(echo "${cert}"| openssl x509 -text | grep 'Not After' | awk '{print $4,$5,$7}')
 	# log "🙏 Certificate for ${TARGET} expire date ${cert_exp}"
 	expirationdate=$(date -d "${cert_exp}" '+%s' 2>/dev/null || true)
-	if [ "x$expirationdate" == "x" ]; then
+	if [ -z "$expirationdate" ]; then
 		log "⚠ No expiratin date in certificate for ${TARGET}"
 		# FIXME: send mail
 		continue
