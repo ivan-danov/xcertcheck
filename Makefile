@@ -112,7 +112,7 @@ define deb_control
 	$(Q)echo "Maintainer: $(VENDOR_NAME) <$(VENDOR_EMAIL)>" >> $(DEBDIR)/DEBIAN/control
 	$(Q)echo "Homepage: $(VENDOR_SITE)" >> $(DEBDIR)/DEBIAN/control
 	$(Q)echo "Priority: optional" >> $(DEBDIR)/DEBIAN/control
-	$(Q)echo "Depends: debconf (>= 0.5) | debconf-2.0, logrotate, cron $(PACKAGE_DEPS)" >> $(DEBDIR)/DEBIAN/control
+	$(Q)echo "Depends: debconf (>= 0.5) | debconf-2.0, logrotate, cron, coreutils $(PACKAGE_DEPS)" >> $(DEBDIR)/DEBIAN/control
 	$(Q)echo "Installed-Size: `du -sl $(DEBDIR)/|cut -f 1`" >> $(DEBDIR)/DEBIAN/control
 	$(Q)echo "Description: $(DEBDESC)" >> $(DEBDIR)/DEBIAN/control
 	$(Q)chmod 644 $(DEBDIR)/DEBIAN/control

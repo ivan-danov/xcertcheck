@@ -27,7 +27,6 @@ DAYS=7<br/>
 XMAIL=msmtp<br/>
 <br/>
 create /etc/xcertcheck.list.txt file. example:<br/>
-www.danov.pro:443<br/>
 www.google.com:443<br/>
 www.github.com:443<br/>
 <br/>
