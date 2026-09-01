@@ -8,9 +8,9 @@ SSL Certificate checker service
 make deb
 
 ## Or download latest release
-curl -fsSL "$(curl -s "https://api.github.com/repos/ivan-danov/xcertcheck/releases/latest"|grep "browser_download_url.*deb"|cut -d ':' -f 2,3|tr -d \"|xargs)" -o ./xcertcheck.deb
-sudo apt -qq install -y ./xcertcheck.deb
-rm ./xcertcheck.deb
+curl -fsSL "$(curl -s "https://api.github.com/repos/ivan-danov/xcertcheck/releases/latest"|grep "browser_download_url.*deb"|cut -d ':' -f 2,3|tr -d \"|xargs)" -o ./xcertcheck.deb<br/>
+sudo apt -qq install -y ./xcertcheck.deb<br/>
+rm ./xcertcheck.deb<br/>
 
 ## Install deb package
 apt install ./xcertcheck\_&lt;VERSION&gt;\_all.deb
