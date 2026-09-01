@@ -21,7 +21,7 @@ DEBDESC += "https certificate check service"
 
 DEBDIR = $(PROJECT)_deb
 
-# PACKAGE_DEPS += ,reprepro ,apg
+# PACKAGE_DEPS += ,mailutils
 
 ifneq ($(V),0)
 Q =

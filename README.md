@@ -26,6 +26,7 @@ RECIPIENT=user@example.com<br/>
 DAYS=7<br/>
 XMAIL=msmtp<br/>
 OPENSSL_TIMEOUT=30<br/>
+SEND_GROUP_EMAIL=1<br/>
 <br/>
 create /etc/xcertcheck.list.txt file. example:<br/>
 www.google.com:443<br/>
