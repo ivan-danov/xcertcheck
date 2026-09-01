@@ -25,6 +25,7 @@ DOMAINS=/etc/xcertcheck.list.txt<br/>
 RECIPIENT=user@example.com<br/>
 DAYS=7<br/>
 XMAIL=msmtp<br/>
+OPENSSL_TIMEOUT=30<br/>
 <br/>
 create /etc/xcertcheck.list.txt file. example:<br/>
 www.google.com:443<br/>
